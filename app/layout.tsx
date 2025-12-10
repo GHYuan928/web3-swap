@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import Providers from "./provider";
+import { roboto } from "./theme";
+import Header from "./components/Header";
+import { ToastContainer } from 'react-toastify';
+
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,12 +17,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    <html lang="en" className={roboto.variable} suppressHydrationWarning>
+      <body>
+        <Providers>
+          <Header />
+          <div className='w-full h-full flex justify-center'>
+            <div className=" w-6xl h-full ">{children}</div>
+          </div>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            toastClassName="custom-toast"
+            progressClassName="custom-toast-progress"
+          />
+        </Providers>
       </body>
     </html>
   );
 }
+
