@@ -7,7 +7,7 @@ import { WalletOptions } from './WalletOption'
 const ConnectWallet = () => {
   // 使用 useConnection 来检查连接状态，与 Connection 组件保持一致
   const { isConnected } = useConnection()
-
+  console.log('isConnected',isConnected)
   if (isConnected) return <Connection />
   return <WalletOptions />
 }

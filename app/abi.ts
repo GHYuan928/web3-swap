@@ -1,5 +1,26 @@
 const abi = [
   {
+    "name": "approve",
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      {
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ]
+  },
+  {
     name: 'name',
     type: 'function',
     stateMutability: 'view',
@@ -14,63 +35,63 @@ const abi = [
     outputs: [{ type: 'string' }]
   },
   {
-  "name": "getAllPools",
-  "type": "function",
-  "stateMutability": "view",
-  "inputs": [],
-  "outputs": [
-    {
-      "name": "poolsInfo",
-      "type": "tuple[]",
-      "components": [
-        {
-          "name": "pool",
-          "type": "address"
-        },
-        {
-          "name": "token0",
-          "type": "address"
-        },
-        {
-          "name": "token1",
-          "type": "address"
-        },
-        {
-          "name": "index",
-          "type": "uint32"
-        },
-        {
-          "name": "fee",
-          "type": "uint24"
-        },
-        {
-          "name": "feeProtocol",
-          "type": "uint8"
-        },
-        {
-          "name": "tickLower",
-          "type": "int24"
-        },
-        {
-          "name": "tickUpper",
-          "type": "int24"
-        },
-        {
-          "name": "tick",
-          "type": "int24"
-        },
-        {
-          "name": "sqrtPriceX96",
-          "type": "uint160"
-        },
-        {
-          "name": "liquidity",
-          "type": "uint128"
-        }
-      ]
-    }
-  ]
-},
+    "name": "getAllPools",
+    "type": "function",
+    "stateMutability": "view",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "poolsInfo",
+        "type": "tuple[]",
+        "components": [
+          {
+            "name": "pool",
+            "type": "address"
+          },
+          {
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "name": "index",
+            "type": "uint32"
+          },
+          {
+            "name": "fee",
+            "type": "uint24"
+          },
+          {
+            "name": "feeProtocol",
+            "type": "uint8"
+          },
+          {
+            "name": "tickLower",
+            "type": "int24"
+          },
+          {
+            "name": "tickUpper",
+            "type": "int24"
+          },
+          {
+            "name": "tick",
+            "type": "int24"
+          },
+          {
+            "name": "sqrtPriceX96",
+            "type": "uint160"
+          },
+          {
+            "name": "liquidity",
+            "type": "uint128"
+          }
+        ]
+      }
+    ]
+  },
   {
     "name": "createAndInitializePoolIfNecessary",
     "type": "function",
@@ -344,7 +365,133 @@ const abi = [
         "type": "uint256"
       }
     ]
+  },
+  
+  {
+    "name": "burn",
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      {
+        "name": "positionId",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "name": "amount1",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "name": "collect",
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      {
+        "name": "positionId",
+        "type": "uint256"
+      },
+      {
+        "name": "recipient",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "name": "amount1",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "name": "quoteExactInput",
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "tokenIn",
+            "type": "address"
+          },
+          {
+            "name": "tokenOut",
+            "type": "address"
+          },
+          {
+            "name": "indexPath",
+            "type": "uint32[]"
+          },
+          {
+            "name": "amountIn",
+            "type": "uint256"
+          },
+          {
+            "name": "sqrtPriceLimitX96",
+            "type": "uint160"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amountOut",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "name": "quoteExactOutput",
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "tokenIn",
+            "type": "address"
+          },
+          {
+            "name": "tokenOut",
+            "type": "address"
+          },
+          {
+            "name": "indexPath",
+            "type": "uint32[]"
+          },
+          {
+            "name": "amountOut",
+            "type": "uint256"
+          },
+          {
+            "name": "sqrtPriceLimitX96",
+            "type": "uint160"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amountIn",
+        "type": "uint256"
+      }
+    ]
   }
+  
 ]
 const poolManagerAddr =  "0xddC12b3F9F7C91C79DA7433D8d212FB78d609f7B"
 const positionManagerAddr = "0xbe766Bf20eFfe431829C5d5a2744865974A0B610"

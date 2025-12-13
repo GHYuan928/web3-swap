@@ -21,7 +21,8 @@ import { toast } from 'react-toastify';
 import usePairs from '@/app/hooks/usePairs';
 import TokenAmountField from '@/app/components/TokenAmountField';
 import {parseUnits} from 'viem'
-
+import {useApproval} from '../../hooks/useApproval'
+import usePools from '@/app/hooks/usePools';
 interface AddModalProps {
   open: boolean;
   handleClose: (flag?: boolean) => void;
@@ -32,16 +33,13 @@ interface AddModalProps {
 const AddModal: React.FC<AddModalProps> = ({ open, handleClose }) => {
   const { address } = useConnection()
   const writeContract = useWriteContract()
-  const { paris ,pairToken0s, getPairToke1sFromToken0} = usePairs();
+  const {approve, isPending, error} =  useApproval()
+  const { pairToken0s, getPairToke1sFromToken0} = usePairs();
   // 获取交易池子
-  const {data: pools} = useReadContract({
-    abi,
-    address: poolManagerAddr,
-    functionName: 'getAllPools',
-    args: [],
-  }) as { data: Record<string,any>[] }
+  const {pools} = usePools();
 
   const [loading, setLoading] = useState(false);
+  const [feeOption, setFeeOption] = useState<number[]>([])
   // 表单数据
   const [formData, setFormData] = useState<FormData>({
     token0: '',
@@ -53,21 +51,38 @@ const AddModal: React.FC<AddModalProps> = ({ open, handleClose }) => {
     tickUpper: '',
     sqrtPriceX96: ''
   });
-  const currentPool = useMemo(()=>{
+  const [selectPools, setSelectPools] = useState<Record<string, any>[]>([])
+  useEffect(()=>{
     if(formData.token0 && formData.token1 && pools?.length) {
-      const pool = pools?.find((p: any)=>{
+      const curPools = pools?.filter((p: any)=>{
         return ( (p.token0 === formData.token0 && p.token1 === formData.token1) || (p.token0 === formData.token1 && p.token1 === formData.token0) )
+      })
+      const fees = curPools.map(p=> p.fee / 10000)
+      setFeeOption(fees)
+      // 默认选中第一个
+      if(fees.length){
+        setFormData({...formData, fee: `${fees[0]}`})
+      }
+      setSelectPools(curPools)
+    }else{
+      setSelectPools([])
+    }
+ 
+  },[formData.token0, formData.token1,pools])
+  const currentPool = useMemo(()=>{
+    if(formData.token0 && formData.token1 && selectPools?.length && formData.fee) {
+      const pool = selectPools?.find((p: any)=>{
+        return ( (p.token0 === formData.token0 && p.token1 === formData.token1) || (p.token0 === formData.token1 && p.token1 === formData.token0) ) && (p.fee == (  Number(formData.fee) * 10000))
       })
       return pool;
     }
     return null
-  },[formData.token0, formData.token1,pools])
-  console.log('current Pool',currentPool)
+  },[formData.token0, formData.token1,formData.fee,selectPools])
+
   useEffect(()=>{
     if(currentPool){
       setFormData({
         ...formData,
-        fee: currentPool.fee / 10000 + '',
         tickLower: tickToPrice(currentPool.tickLower,18,18).toFixed(4),
         tickUpper: tickToPrice(currentPool.tickUpper,18,18).toFixed(4),
         sqrtPriceX96: sqrtPriceX96ToPrice(currentPool.sqrtPriceX96,18,18).toFixed(4),
@@ -85,6 +100,18 @@ const AddModal: React.FC<AddModalProps> = ({ open, handleClose }) => {
 
   const submitToContract = async (data: any) => {
     setLoading(true)
+    let token0ApproveReault = true;
+    let token1ApproveReault = true;
+    if(data[0].amount0Desired != 0){
+      token0ApproveReault = await approve(data[0].token0,positionManagerAddr,data[0].amount0Desired)
+    }
+    if(data[0].amount1Desired != 0){
+      token1ApproveReault = await approve(data[0].token1,positionManagerAddr,data[0].amount1Desired)
+    }
+    if(!token0ApproveReault || !token1ApproveReault) {
+      throw new Error("approve 错误")
+    }
+
     const h = await writeContract.mutateAsync({ 
           abi,
           address: positionManagerAddr,
@@ -92,16 +119,17 @@ const AddModal: React.FC<AddModalProps> = ({ open, handleClose }) => {
           args: data,
        })
     
-    console.log('Transaction submitted, hash:', h);
+    console.log('mint submitted, hash:', h);
     const receipt = await waitForTransactionReceipt(config,{hash:h})
     if(receipt.status === 'success'){
-      toast.success('add Pool success')
+      toast.success('注入流动性成功')
       handleClose(true)
     }else {
-      toast.error('add Pool error')
+      toast.error('注入流动性失败')
     }
     console.log('Transaction mined, receipt:', receipt);
     setLoading(false)
+    handleClose(true)
   }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +142,7 @@ const AddModal: React.FC<AddModalProps> = ({ open, handleClose }) => {
     data.amount1Desired = parseUnits( formData.token1Amount!, 18)
     data.index = currentPool?.index;
     data.recipient = address;
-    data.deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20)
+    data.deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 200)
     console.log('转换后参数:', data);
     // submit
     
@@ -182,10 +210,9 @@ const AddModal: React.FC<AddModalProps> = ({ open, handleClose }) => {
                   handleInputChange('fee', e.target.value);
                 }}
               >
-                {[0.01, 0.05, 0.3, 1].map(fee => (
+                {feeOption.map(fee => (
                   <FormControlLabel
                     key={fee}
-                    disabled
                     value={fee.toString()}
                     control={<Radio />}
                     label={`${fee}%`}

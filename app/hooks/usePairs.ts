@@ -17,16 +17,12 @@ const usePars = ()=>{
   })
   useEffect(()=>{
     const getPairs  = async()=>{
-        const p = await fetchTokensFromPairs((originParis as Record<string, any>[]))
-        console.log('fetched pairs:');
-        // @ts-ignore
-        setPairs(p.newPairs)
-        // @ts-ignore
-        // setSessionItem('pairs', JSON.stringify(p.newPairs));
-        // @ts-ignore
-        setTokens(p.tokenInfo)
-        // @ts-ignore
-        // setSessionItem('tokens', JSON.stringify(p.tokenInfo));
+      // console.log('originParis',originParis)
+      // @ts-ignore
+        const {newPairs, tokenInfo} = await fetchTokensFromPairs((originParis as Record<string, any>[]))
+        // console.log('fetched pairs:');
+        setPairs(newPairs)
+        setTokens(tokenInfo)
     }
     getPairs();
   },[originParis]);
@@ -46,11 +42,13 @@ const usePars = ()=>{
       }
     })
     return token0infos;
-  },[paris])
+  },[paris]) as Record<string, any>[]
   
   const getPairToke1sFromToken0 = (token0: string)=>{  
     // 根据 token0 获取对应的 token1 列表
+    // console.log('pairs',paris)
     const token1s = paris?.filter(p=>p.token0 === token0).map(p=>p.token1info);
+    // console.log('token1s',token1s)
     return token1s;
   }
   return {

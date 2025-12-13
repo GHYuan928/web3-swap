@@ -230,24 +230,29 @@ const AddModal: React.FC<AddModalProps> = ({ open, handleClose }) => {
     }
   };
   const submitToContract = async (data: any) => {
-    setLoading(true)
-    const h = await writeContract.mutateAsync({ 
-          abi,
-          address: poolManagerAddr,
-          functionName: 'createAndInitializePoolIfNecessary',
-          args: data,
-       })
-    
-    console.log('Transaction submitted, hash:', h);
-    const receipt = await waitForTransactionReceipt(config,{hash:h})
-    if(receipt.status === 'success'){
-      toast.success('add Pool success')
-      handleClose(true)
-    }else {
-      toast.error('add Pool error')
+    try {
+      setLoading(true)
+      const h = await writeContract.mutateAsync({ 
+            abi,
+            address: poolManagerAddr,
+            functionName: 'createAndInitializePoolIfNecessary',
+            args: data,
+        })
+      
+      console.log('Transaction submitted, hash:', h);
+      const receipt = await waitForTransactionReceipt(config,{hash:h})
+      if(receipt.status === 'success'){
+        toast.success('add Pool success')
+        handleClose(true)
+      }else {
+        toast.error('add Pool error')
+      }
+      console.log('Transaction mined, receipt:', receipt);
+      setLoading(false)
+    } catch (error:any) {
+      console.log('error',error)
+      toast.error(error.shortMessage || 'Failed')
     }
-    console.log('Transaction mined, receipt:', receipt);
-    setLoading(false)
   }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -378,10 +383,16 @@ const AddModal: React.FC<AddModalProps> = ({ open, handleClose }) => {
                 row 
                 value={formData.fee}
                 onChange={(e) => {
-                  handleInputChange('fee', e.target.value);
-                  // 对于 RadioGroup，选择后立即标记为已触摸
+                  const v = e.target.value;
+                  handleInputChange('fee', v);
                   if (!touched.fee) {
-                    handleBlur('fee');
+                    setTouched(prev => ({ ...prev, fee: true }));
+                    const err = validateField('fee', v);
+                    setErrors(prev => ({ ...prev, fee: err || undefined }));
+                  } else {
+                    // 若已触摸过，实时校验新值
+                    const err = validateField('fee', v);
+                    setErrors(prev => ({ ...prev, fee: err || undefined }));
                   }
                 }}
               >

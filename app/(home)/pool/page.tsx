@@ -1,5 +1,5 @@
 'use client'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Box from '@mui/material/Box'
 import DataTable, { Column } from '../../components/DataTable'
 import { useReadContract } from 'wagmi'
@@ -10,6 +10,8 @@ import { sqrtPriceX96ToPrice, tickToPrice } from '@/app/utils'
 import ERC20Token from '@/app/components/ERC20Token'
 import usePairs from '@/app/hooks/usePairs'
 import { formatEther } from 'viem'
+import { TickMath } from '@uniswap/v3-sdk'
+import JSBI from 'jsbi'
 interface PoolInfo {
   token0: string;
   token1: string;
@@ -24,6 +26,12 @@ interface PoolInfo {
 
 const page = () => {
   const [openModa, setOpenModal] = useState(false)
+  useEffect(()=>{
+    const tick = TickMath.getTickAtSqrtRatio( JSBI.BigInt(4295128740) )
+    console.log('tick',tick)
+    const x96 = TickMath.getSqrtRatioAtTick(-887272)
+    console.log('tick2',x96.toString())
+  },[])
   const {tokens} = usePairs();
   const {data, isLoading, refetch} = useReadContract({
     abi,
@@ -67,8 +75,8 @@ const page = () => {
       title: 'Set Price Range',
       dataIndex: 'setPriceRange',
       key: 'setPriceRange',
-      render: (value: any, record: PoolInfo, index: number)=>{
-        return `${tickToPrice(record.tickLower,18,18).toFixed(4)} - ${tickToPrice(record.tickUpper,18,18).toFixed(4)}`
+      render: (value: any, record: PoolInfo)=>{
+        return `${tickToPrice(record.tickLower).toFixed(4)} - ${tickToPrice(record.tickUpper).toFixed(4)}`
       }
     },
     {
@@ -76,7 +84,7 @@ const page = () => {
       dataIndex: 'sqrtPriceX96',
       key: 'sqrtPriceX96',
       render: (value: any, record: PoolInfo)=>{
-        return sqrtPriceX96ToPrice(value,18,18).toFixed(4)
+        return sqrtPriceX96ToPrice(value).toFixed(4)
       } 
     },
     {
