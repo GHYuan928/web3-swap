@@ -29,8 +29,7 @@ function useSwap(){
     try {
       setLoading(true)
       const isInput = funcName.endsWith('Input')
-      const amount =  isInput? parseUnits(value0,18): parseUnits(`${Number(value0) * 2}`,18)
-
+      const amount =  isInput? parseUnits(value0,18): parseUnits(value0,18) * (BPS_BASE + percentToBps(slippageBps)) / BPS_BASE
       const token0ApproveReault = await approve(token0Address,swapRouterAddr,amount)
       if(token0ApproveReault === false){
         console.log('swapHandle: approve error')
