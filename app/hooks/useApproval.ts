@@ -1,6 +1,4 @@
-import { useState } from 'react';
-import { useWriteContract, useReadContract, useConnection } from 'wagmi';
-import { parseUnits, formatUnits } from 'viem';
+import { useWriteContract, useConnection } from 'wagmi';
 import {waitForTransactionReceipt} from '@wagmi/core'
 import {config} from '../wagmi-config' 
 import {abi} from '../abi'
@@ -10,7 +8,6 @@ export function useApproval() {
   const { mutateAsync, isPending, error } = useWriteContract();
   const approve = async (tokenAddress: `0x${string}` ,spender: `0x${string}`, amount: bigint): Promise<boolean> => {
     try {
-      debugger
       if (!tokenAddress || !address) {
         throw new Error('请先连接钱包并选择代币');
       }

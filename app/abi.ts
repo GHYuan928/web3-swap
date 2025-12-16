@@ -490,8 +490,109 @@ const abi = [
         "type": "uint256"
       }
     ]
-  }
-  
+  },
+  {
+    "type": "function",
+    "name": "exactInput",
+    "stateMutability": "payable",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "tokenIn",
+            "type": "address"
+          },
+          {
+            "name": "tokenOut",
+            "type": "address"
+          },
+          {
+            "name": "indexPath",
+            "type": "uint32[]"
+          },
+          {
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "name": "amountIn",
+            "type": "uint256"
+          },
+          {
+            "name": "amountOutMinimum",
+            "type": "uint256"
+          },
+          {
+            "name": "sqrtPriceLimitX96",
+            "type": "uint160"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amountOut",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "exactOutput",
+    "stateMutability": "payable",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "tokenIn",
+            "type": "address"
+          },
+          {
+            "name": "tokenOut",
+            "type": "address"
+          },
+          {
+            "name": "indexPath",
+            "type": "uint32[]"
+          },
+          {
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "name": "amountOut",
+            "type": "uint256"
+          },
+          {
+            "name": "amountInMaximum",
+            "type": "uint256"
+          },
+          {
+            "name": "sqrtPriceLimitX96",
+            "type": "uint160"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amountIn",
+        "type": "uint256"
+      }
+    ]
+  }  
 ]
 const poolManagerAddr =  "0xddC12b3F9F7C91C79DA7433D8d212FB78d609f7B"
 const positionManagerAddr = "0xbe766Bf20eFfe431829C5d5a2744865974A0B610"

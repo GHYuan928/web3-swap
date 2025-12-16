@@ -11,9 +11,9 @@ import FormControl from '@mui/material/FormControl';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
-import {convertFormDataToParams, tickToPrice, sqrtPriceX96ToPrice} from '../../utils/index'
-import { useWriteContract, useReadContract, useConnection } from 'wagmi'
-import { abi, poolManagerAddr, positionManagerAddr} from '../../abi'
+import { tickToPrice, sqrtPriceX96ToPrice} from '../../utils/index'
+import { useWriteContract, useConnection } from 'wagmi'
+import { abi, positionManagerAddr} from '../../abi'
 import { FormData } from '../../interface/pool';
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { config } from '../../wagmi-config'

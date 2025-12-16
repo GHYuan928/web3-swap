@@ -7,8 +7,6 @@ import { useState } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-
-
 interface TokenSelectInputProps {
   token: Record<string,any>|undefined
   tokenSource: Record<string,any>[]|undefined
@@ -16,8 +14,9 @@ interface TokenSelectInputProps {
   onSelect: (t: Record<string,any>)=>void
   onChangeAmount?: (s:string)=>void
   onBlurAmount?: (s:string)=>void
+  children?: React.ReactNode
 }
-const TokenSelectInput = ({amount,token, tokenSource, onChangeAmount,onBlurAmount, onSelect}:TokenSelectInputProps) => {
+const TokenSelectInput = ({amount,token, tokenSource, onChangeAmount,onBlurAmount, onSelect, children}:TokenSelectInputProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement|null>(null);
   
   const onCloseMenu = ()=>{
@@ -34,21 +33,21 @@ const TokenSelectInput = ({amount,token, tokenSource, onChangeAmount,onBlurAmoun
         placeholder="0.0"
         type="number"
         slotProps={{
-        input: {
-          disableUnderline: true,
-          endAdornment: (
-            <InputAdornment position="end">
-              <Button
-                size="small"
-                onClick={(e) => setAnchorEl(e.currentTarget)}
-                className="flex items-center shadow-1 rounded-xl px-4"
-              >
-                <span>{token?.symbol}</span>
-                <KeyboardArrowDownIcon />
-              </Button>
-            </InputAdornment>
-            ),
-          },
+          input: {
+            disableUnderline: true,
+            endAdornment: (
+              <InputAdornment position="end">
+                <Button
+                  size="small"
+                  onClick={(e) => setAnchorEl(e.currentTarget)}
+                  className="flex items-center shadow-1 rounded-xl px-4 py-2"
+                >
+                  <span>{token?.symbol}</span>
+                  <KeyboardArrowDownIcon />
+                </Button>
+              </InputAdornment>
+              ),
+            },
         }}
         sx={{
           '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
@@ -60,6 +59,7 @@ const TokenSelectInput = ({amount,token, tokenSource, onChangeAmount,onBlurAmoun
           },
         }}
       />
+      {children}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
