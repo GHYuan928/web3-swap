@@ -10,7 +10,7 @@ const usePools = ()=>{
   
   const getCurrentPools = (token0: `0x${string}`,token1: `0x${string}`)=>{
     const curPools = pools?.filter((p: any)=>{
-        return p.token0 === token0 && p.token1 === token1
+        return p.token0 === token0 && p.token1 === token1 && p.liquidity > 0
       })
     return curPools||[]
   }

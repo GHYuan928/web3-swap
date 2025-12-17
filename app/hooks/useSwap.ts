@@ -25,6 +25,7 @@ function useSwap(){
   
   const {approve, isPending, error} =  useApproval()
   const [loading, setLoading] = useState(false)
+  
   const swap = async (funcName: string, {token0Address,token1Address, value0,value1, pools,slippageBps}:SwapParams): Promise<boolean>=>{
     try {
       setLoading(true)
@@ -49,10 +50,11 @@ function useSwap(){
         data.amountIn = parseUnits(value0,18);
         data.sqrtPriceLimitX96 = BigInt(4295128740); //最小值+1  就是 tick 最小值 +1
       }else {
-        data.amountOut = parseUnits(value1,18);
         const amountInMaximum = parseUnits(value0,18) * (BPS_BASE + percentToBps(slippageBps)) / BPS_BASE
         data.amountInMaximum = amountInMaximum;
-        data.sqrtPriceLimitX96 = BigInt('1461446703485210103287273052203988822378723970341'); //最大值-1  就是 tick 最大值 -1
+        data.amountOut = parseUnits(value1,18);
+        // 先判断 token0 token1 顺序， 再给sqrtPriceLimitX96 赋值, 如果token0-token1 就是 tick min 的价格 +1，否则 tick max price -1
+        data.sqrtPriceLimitX96 = BigInt(4295128740) //BigInt('1461446703485210103287273052203988822378723970341'); //最大值-1  就是 tick 最大值 -1
       }
       // 滑点
       console.log('swapHandle: func',funcName)
